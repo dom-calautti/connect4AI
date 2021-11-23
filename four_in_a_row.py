@@ -1,6 +1,6 @@
 # use math library if needed
 import math
-
+import copy
 def get_child_boards(player, board):
     """
     Generate a list of succesor boards obtained by placing a disc 
@@ -10,7 +10,7 @@ def get_child_boards(player, board):
     ----------
     player: board.PLAYER1 or board.PLAYER2
         the player that will place a disc on the board
-    board: the current board   instance
+    board: the current board instance
 
     Returns
     -------
@@ -125,23 +125,80 @@ def minimax(player, board, depth_limit):
     """
     max_player = player
     placement = None
-
+    
 ### Please finish the code below ##############################################
 ###############################################################################
+
     def value(player, board, depth_limit):
-        pass
+        #print("depth " + str(depth_limit))
+
+        if depth_limit == 0 or board.terminal():
+            return {"column" : 0 , "score" : evaluate(player, board) }
+        if player == max_player:
+            return max_value(player, board, depth_limit)
+        if player != max_player:
+            return min_value(player, board, depth_limit)
+        
 
     def max_value(player, board, depth_limit):
-        pass
+        next_player = board.PLAYER2 if player == board.PLAYER1 else board.PLAYER1
+        print("enters max: ")
+        # collects all valid move options
+        moves = get_child_boards(player, board)
+        #print("max moves: "+ str(moves))
+        
+        # set score to minimum and best_move to default first move
+        score = -math.inf
+        best_move = moves[0]
+
+        for move in moves:
+            move_tuple = move
+            column = move_tuple[0]
+            board_copy = move_tuple[1]
+            #compare previous score with new score
+            max_score = max(score, value(next_player, board_copy, depth_limit-1)["score"])
+            print("current max score: "+ str(max_score) + " col: " + str(column)+ " depth: "+ str(depth_limit))
+            if max_score > score :
+                best_move = column
+                score = max_score
+        print("returning mAX score: "+ str(score))
+        
+        #all move paths are traversed, return best_move and its score 
+        return {"column" : best_move, "score" : score}
+        
     
     def min_value(player, board, depth_limit):
-        pass
+        next_player = board.PLAYER2 if player == board.PLAYER1 else board.PLAYER1
+        print("enters min: ")
+        # list of tuples containing column, and board_copy (for all valid moves)
+        moves = get_child_boards(player, board)
+        #print("min moves: "+ str(moves))
+        # set score to maximum and best_move to default first move
+        score = math.inf
+        best_move = moves[0]
+        
+        for move in moves:
+            move_tuple = move
+            column = move_tuple[0]
+            board_copy = move_tuple[1]
+            
+            #compare previous score with new score
+            min_score = min(score, value(next_player, board_copy , depth_limit-1)["score"])
+            print("current min score: "+ str(min_score) + " col: " + str(column) + " depth: "+ str(depth_limit))
+            if min_score < score :
+                best_move = column
+                score = min_score
+        print("returning min score: "+ str(score))
+        
+        #all move paths are traversed, return best_move its score
+        return {"column" : best_move, "score" : score}
+        
 
-    
-    next_player = board.PLAYER2 if player == board.PLAYER1 else board.PLAYER1
-    score = -math.inf
-
+    #returns column of best move
+    placement = value(max_player, board, depth_limit)["column"]
+    print("placement: "+ str(placement))
 ###############################################################################
+    
     return placement
 
 
@@ -215,7 +272,7 @@ def expectimax(player, board, depth_limit):
     """
     max_player = player
     placement = None
-    
+
 ### Please finish the code below ##############################################
 ###############################################################################
     def value(player, board, depth_limit):
