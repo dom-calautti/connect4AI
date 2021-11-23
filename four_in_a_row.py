@@ -37,7 +37,7 @@ def evaluate(player, board):
     player: board.PLAYER1 or board.PLAYER2
         the specific player
     board: the board instance
-
+    
     Returns
     -------
     score: float
@@ -54,7 +54,7 @@ def evaluate(player, board):
     # s4 for four
     score = [0]*5
     adv_score = [0]*5
-
+    print("player: "+ str(player) + " adv: " + str(adversary) )
     # Initialize the weights
     # [w0, w1, w2, w3, --w4--]
     # w0 for s0, w1 for s1, w2 for s2, w3 for s3
@@ -130,22 +130,18 @@ def minimax(player, board, depth_limit):
 ###############################################################################
 
     def value(player, board, depth_limit):
-        #print("depth " + str(depth_limit))
-
         if depth_limit == 0 or board.terminal():
-            return {"column" : 0 , "score" : evaluate(player, board) }
+            return {"column" : 0 , "score" : evaluate(max_player, board) }
         if player == max_player:
             return max_value(player, board, depth_limit)
         if player != max_player:
             return min_value(player, board, depth_limit)
         
-
+        
     def max_value(player, board, depth_limit):
         next_player = board.PLAYER2 if player == board.PLAYER1 else board.PLAYER1
-        print("enters max: ")
         # collects all valid move options
         moves = get_child_boards(player, board)
-        #print("max moves: "+ str(moves))
         
         # set score to minimum and best_move to default first move
         score = -math.inf
@@ -157,11 +153,9 @@ def minimax(player, board, depth_limit):
             board_copy = move_tuple[1]
             #compare previous score with new score
             max_score = max(score, value(next_player, board_copy, depth_limit-1)["score"])
-            print("current max score: "+ str(max_score) + " col: " + str(column)+ " depth: "+ str(depth_limit))
             if max_score > score :
                 best_move = column
                 score = max_score
-        print("returning mAX score: "+ str(score))
         
         #all move paths are traversed, return best_move and its score 
         return {"column" : best_move, "score" : score}
@@ -169,10 +163,8 @@ def minimax(player, board, depth_limit):
     
     def min_value(player, board, depth_limit):
         next_player = board.PLAYER2 if player == board.PLAYER1 else board.PLAYER1
-        print("enters min: ")
         # list of tuples containing column, and board_copy (for all valid moves)
         moves = get_child_boards(player, board)
-        #print("min moves: "+ str(moves))
         # set score to maximum and best_move to default first move
         score = math.inf
         best_move = moves[0]
@@ -184,19 +176,15 @@ def minimax(player, board, depth_limit):
             
             #compare previous score with new score
             min_score = min(score, value(next_player, board_copy , depth_limit-1)["score"])
-            print("current min score: "+ str(min_score) + " col: " + str(column) + " depth: "+ str(depth_limit))
             if min_score < score :
                 best_move = column
                 score = min_score
-        print("returning min score: "+ str(score))
         
         #all move paths are traversed, return best_move its score
         return {"column" : best_move, "score" : score}
         
-
     #returns column of best move
     placement = value(max_player, board, depth_limit)["column"]
-    print("placement: "+ str(placement))
 ###############################################################################
     
     return placement
