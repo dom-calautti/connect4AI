@@ -138,24 +138,24 @@ def minimax(player, board, depth_limit):
         
     def max_value(player, board, depth_limit):
         next_player = board.PLAYER2 if player == board.PLAYER1 else board.PLAYER1
-        # collects all valid move options
+        # list of tuples containing column, and board_copy (for all valid moves)
         moves = get_child_boards(player, board)
         
         # set score to minimum and best_move to default first move
         score = -math.inf
         best_move = moves[0]
-
+        #traverse all move paths
         for move in moves:
             move_tuple = move
             column = move_tuple[0]
             board_copy = move_tuple[1]
-            #compare previous score with new score
+            #recursively call value as next player, if the new score is max then record current column as current best max move
             max_score = max(score, value(next_player, board_copy, depth_limit-1)["score"])
             if max_score > score :
                 best_move = column
                 score = max_score
         
-        #all move paths are traversed, return best_move and its score 
+        #all the move paths for max player are traversed, return its best_move and its score
         return {"column" : best_move, "score" : score}
         
     
@@ -166,22 +166,22 @@ def minimax(player, board, depth_limit):
         # set score to maximum and best_move to default first move
         score = math.inf
         best_move = moves[0]
-        
+        #traverse all move paths
         for move in moves:
             move_tuple = move
             column = move_tuple[0]
             board_copy = move_tuple[1]
             
-            #compare previous score with new score
+            #recursively call value as next player, if the new score is min then record current column as current best min move
             min_score = min(score, value(next_player, board_copy , depth_limit-1)["score"])
             if min_score < score :
                 best_move = column
                 score = min_score
         
-        #all move paths are traversed, return best_move its score
+        #all the move paths for min player are traversed, return its best_move and its score
         return {"column" : best_move, "score" : score}
         
-    #returns column of best move
+    #returns the column of best move
     placement = value(max_player, board, depth_limit)["column"]
 ###############################################################################
     
@@ -228,30 +228,29 @@ def alphabeta(player, board, depth_limit):
         
     def max_value(player, board, depth_limit, alpha, beta):
         next_player = board.PLAYER2 if player == board.PLAYER1 else board.PLAYER1
-        # collects all valid move options
+        # list of tuples containing column, and board_copy (for all valid moves)
         moves = get_child_boards(player, board)
         
         # set score to minimum and best_move to default first move
         score = -math.inf
         best_move = moves[0]
-
+        #traverse all move paths
         for move in moves:
             move_tuple = move
             column = move_tuple[0]
             board_copy = move_tuple[1]
-            #compare previous score with new score
+            #recursively call value as next player, if the new score is max then record current column as current best max move
             max_score = max(score, value(next_player, board_copy, depth_limit-1, alpha, beta)["score"])
             if max_score > score :
                 best_move = column
                 score = max_score
-            #alpha pruning
+            #Pruning, if alpha > beta then min player will not choose any remaining unexplored paths
             alpha = max(max_score, alpha)
             if alpha >= beta:
                 break
-        #all move paths are traversed, return best_move and its score 
+        #all the move paths for max player are traversed, return its best_move and its score
         return {"column" : best_move, "score" : score}
         
-    
     def min_value(player, board, depth_limit, alpha, beta):
         next_player = board.PLAYER2 if player == board.PLAYER1 else board.PLAYER1
         # list of tuples containing column, and board_copy (for all valid moves)
@@ -259,18 +258,18 @@ def alphabeta(player, board, depth_limit):
         # set score to maximum and best_move to default first move
         score = math.inf
         best_move = moves[0]
-        
+        #traverse all move paths
         for move in moves:
             move_tuple = move
             column = move_tuple[0]
             board_copy = move_tuple[1]
             
-            #compare previous score with new score
+            #recursively call value as next player, if the new score is min then record current column as current best min move
             min_score = min(score, value(next_player, board_copy , depth_limit-1, alpha, beta)["score"])
             if min_score < score :
                 best_move = column
                 score = min_score
-            #beta pruning
+            #Pruning, if alpha > beta then min player will not choose any remaining unexplored paths
             beta = min(min_score, beta)
             if beta <= alpha:
                 break
@@ -325,40 +324,42 @@ def expectimax(player, board, depth_limit):
         
     def max_value(player, board, depth_limit):
         next_player = board.PLAYER2 if player == board.PLAYER1 else board.PLAYER1
-        # collects all valid move options
+        # list of tuples containing column, and board_copy (for all valid moves)
         moves = get_child_boards(player, board)
         
         # set score to minimum and best_move to default first move
         score = -math.inf
         best_move = moves[0]
-
+        #traverse all move paths
         for move in moves:
             move_tuple = move
             column = move_tuple[0]
             board_copy = move_tuple[1]
-            #compare previous score with new score
+            #recursively call value as next player, if the new score is max then record current column as current best max move
             max_score = max(score, value(next_player, board_copy, depth_limit-1)["score"])
             if max_score > score :
                 best_move = column
                 score = max_score
-        #all move paths are traversed, return best_move and its score 
+        #all the move paths for max player are traversed, return its best_move and its score
         return {"column" : best_move, "score" : score}
         
-    
+    #The chance player (didnt change function name because not specified in project requirements)
     def min_value(player, board, depth_limit):
         next_player = board.PLAYER2 if player == board.PLAYER1 else board.PLAYER1
         # list of tuples containing column, and board_copy (for all valid moves)
         moves = get_child_boards(player, board)
+        # set score to 0 (neutral) and probability based on number of moves
         average_score = 0
         probability = 1/len(moves) 
+        #traverse all move paths
         for move in moves:
             move_tuple = move
             column = move_tuple[0]
             board_copy = move_tuple[1]
             
-            #compare previous score with new score
+            #recursively call value as next player, calculate the weighted average score with all moves being equally weighted probability.
             average_score = average_score + (value(next_player, board_copy , depth_limit-1)["score"] * probability)
-        #all move paths are traversed, return average score of all paths
+        #all the move paths for chance player are traversed, return its score, return None for column since it is randomly chosen.
         return {"column" : None, "score" : average_score}
         
     #returns column of best move
