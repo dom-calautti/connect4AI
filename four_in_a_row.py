@@ -341,7 +341,6 @@ def expectimax(player, board, depth_limit):
             if max_score > score :
                 best_move = column
                 score = max_score
-        
         #all move paths are traversed, return best_move and its score 
         return {"column" : best_move, "score" : score}
         
@@ -350,11 +349,8 @@ def expectimax(player, board, depth_limit):
         next_player = board.PLAYER2 if player == board.PLAYER1 else board.PLAYER1
         # list of tuples containing column, and board_copy (for all valid moves)
         moves = get_child_boards(player, board)
-        # set score to 0 and random_move to default first move
         average_score = 0
-        random_move = random.choice (moves)
         probability = 1/len(moves) 
-        print(probability)
         for move in moves:
             move_tuple = move
             column = move_tuple[0]
@@ -362,9 +358,8 @@ def expectimax(player, board, depth_limit):
             
             #compare previous score with new score
             average_score = average_score + (value(next_player, board_copy , depth_limit-1)["score"] * probability)
-        
-        #all move paths are traversed, return best_move its score
-        return {"column" : random_move, "score" : average_score}
+        #all move paths are traversed, return average score of all paths
+        return {"column" : None, "score" : average_score}
         
     #returns column of best move
     placement = value(max_player, board, depth_limit)["column"]
