@@ -1,6 +1,5 @@
 # use math library if needed
-import math
-import copy
+import math,random
 def get_child_boards(player, board):
     """
     Generate a list of succesor boards obtained by placing a disc 
@@ -54,7 +53,6 @@ def evaluate(player, board):
     # s4 for four
     score = [0]*5
     adv_score = [0]*5
-    print("player: "+ str(player) + " adv: " + str(adversary) )
     # Initialize the weights
     # [w0, w1, w2, w3, --w4--]
     # w0 for s0, w1 for s1, w2 for s2, w3 for s3
@@ -315,17 +313,61 @@ def expectimax(player, board, depth_limit):
 
 ### Please finish the code below ##############################################
 ###############################################################################
-    def value(player, board, depth_limit):
-        pass
 
+    def value(player, board, depth_limit):
+        if depth_limit == 0 or board.terminal():
+            return {"column" : 0 , "score" : evaluate(max_player, board) }
+        if player == max_player:
+            return max_value(player, board, depth_limit)
+        if player != max_player:
+            return min_value(player, board, depth_limit)
+        
+        
     def max_value(player, board, depth_limit):
-        pass
+        next_player = board.PLAYER2 if player == board.PLAYER1 else board.PLAYER1
+        # collects all valid move options
+        moves = get_child_boards(player, board)
+        
+        # set score to minimum and best_move to default first move
+        score = -math.inf
+        best_move = moves[0]
+
+        for move in moves:
+            move_tuple = move
+            column = move_tuple[0]
+            board_copy = move_tuple[1]
+            #compare previous score with new score
+            max_score = max(score, value(next_player, board_copy, depth_limit-1)["score"])
+            if max_score > score :
+                best_move = column
+                score = max_score
+        
+        #all move paths are traversed, return best_move and its score 
+        return {"column" : best_move, "score" : score}
+        
     
     def min_value(player, board, depth_limit):
-        pass
-
-    next_player = board.PLAYER2 if player == board.PLAYER1 else board.PLAYER1
-    score = -math.inf
+        next_player = board.PLAYER2 if player == board.PLAYER1 else board.PLAYER1
+        # list of tuples containing column, and board_copy (for all valid moves)
+        moves = get_child_boards(player, board)
+        # set score to 0 and random_move to default first move
+        average_score = 0
+        random_move = random.choice (moves)
+        probability = 1/len(moves) 
+        print(probability)
+        for move in moves:
+            move_tuple = move
+            column = move_tuple[0]
+            board_copy = move_tuple[1]
+            
+            #compare previous score with new score
+            average_score = average_score + (value(next_player, board_copy , depth_limit-1)["score"] * probability)
+        
+        #all move paths are traversed, return best_move its score
+        return {"column" : random_move, "score" : average_score}
+        
+    #returns column of best move
+    placement = value(max_player, board, depth_limit)["column"]
 ###############################################################################
     return placement
 
