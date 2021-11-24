@@ -218,17 +218,69 @@ def alphabeta(player, board, depth_limit):
 
 ### Please finish the code below ##############################################
 ###############################################################################
-    def value(player, board, depth_limit):
-        pass
 
-    def max_value(player, board, depth_limit):
-        pass
+    def value(player, board, depth_limit, alpha, beta):
+        if depth_limit == 0 or board.terminal():
+            return {"column" : 0 , "score" : evaluate(max_player, board) }
+        if player == max_player:
+            return max_value(player, board, depth_limit, alpha, beta)
+        if player != max_player:
+            return min_value(player, board, depth_limit, alpha, beta)
+        
+        
+    def max_value(player, board, depth_limit, alpha, beta):
+        next_player = board.PLAYER2 if player == board.PLAYER1 else board.PLAYER1
+        # collects all valid move options
+        moves = get_child_boards(player, board)
+        
+        # set score to minimum and best_move to default first move
+        score = -math.inf
+        best_move = moves[0]
+
+        for move in moves:
+            move_tuple = move
+            column = move_tuple[0]
+            board_copy = move_tuple[1]
+            #compare previous score with new score
+            max_score = max(score, value(next_player, board_copy, depth_limit-1, alpha, beta)["score"])
+            if max_score > score :
+                best_move = column
+                score = max_score
+            #alpha pruning
+            alpha = max(max_score, alpha)
+            if alpha >= beta:
+                break
+        #all move paths are traversed, return best_move and its score 
+        return {"column" : best_move, "score" : score}
+        
     
-    def min_value(player, board, depth_limit):
-        pass
-
-    next_player = board.PLAYER2 if player == board.PLAYER1 else board.PLAYER1
-    score = -math.inf
+    def min_value(player, board, depth_limit, alpha, beta):
+        next_player = board.PLAYER2 if player == board.PLAYER1 else board.PLAYER1
+        # list of tuples containing column, and board_copy (for all valid moves)
+        moves = get_child_boards(player, board)
+        # set score to maximum and best_move to default first move
+        score = math.inf
+        best_move = moves[0]
+        
+        for move in moves:
+            move_tuple = move
+            column = move_tuple[0]
+            board_copy = move_tuple[1]
+            
+            #compare previous score with new score
+            min_score = min(score, value(next_player, board_copy , depth_limit-1, alpha, beta)["score"])
+            if min_score < score :
+                best_move = column
+                score = min_score
+            #beta pruning
+            beta = min(min_score, beta)
+            if beta <= alpha:
+                break
+        #all move paths are traversed, return best_move its score
+        return {"column" : best_move, "score" : score}
+        
+    #returns column of best move
+    placement = value(max_player, board, depth_limit, alpha = -math.inf, beta = math.inf)["column"]
 ###############################################################################
     return placement
 
