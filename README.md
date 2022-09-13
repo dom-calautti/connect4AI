@@ -15,8 +15,8 @@ Connect4 is a "solved game" meaning if played perfectly the first player will al
 The A.I opponent has 3 playstyle options: 
 * **Minmax**
  * **Minmax with alpha beta pruning**
-*  **Expectimax**
- **Depth option:** Decision tree depth. (A greater depth = A more calculated opponent) 
+*  **Expectimax** \
+ **Depth options (For all playstyles):** Decision tree depth. (A greater depth = A more calculated opponent) 
 
 ## Minmax algorithm implementing alpha beta pruning
 
