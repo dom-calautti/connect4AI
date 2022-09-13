@@ -3,8 +3,9 @@
 ## How To Play
 Connect4 is a two player zero-sum game board game.
 The players choose a color (Black or Red) and take turns dropping their colored disc into the game grid (7 col x 6 rows).
-The discs fall down the chosen column to the lowest occupied space. To win the game a player must have 4 connecting discs either horizontally, vertically or diagonally.
-
+The discs fall down the chosen column to the lowest occupied space. To win the game a player must have 4 connecting discs either horizontally, vertically or diagonally.\
+To run game: python3 four_in_a_row.py \
+Must have tkinter module installed.
 ## Modes of play
 Player vs. Player, Player vs. AI, AI vs AI. 
  
